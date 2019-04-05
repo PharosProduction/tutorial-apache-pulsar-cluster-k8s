@@ -20,7 +20,7 @@ $ kubectl apply -f cluster-metadata.yaml
 
 ### Deploy the rest of the components
 
-Once cluster metadata has been successfully initialized, you can then deploy the bookies, brokers, monitoring stack (Prometheus, Grafana), the Pulsar dashboard, and Pulsar cluster proxy
+Once cluster metadata has been successfully initialized, you can then deploy the bookies, brokers and the Pulsar dashboard.
 
 $ kubectl apply -f bookie.yaml
 
