@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: broker-config
+data:
+    PULSAR_MEM: "\" -Xms64m -Xmx128m -XX:MaxDirectMemorySize=128m\""
+    zookeeperServers: zk-cs
+    configurationStoreServers: zk-cs
+    clusterName: local
+    managedLedgerDefaultEnsembleSize: "1"
+    managedLedgerDefaultWriteQuorum: "1"
+    managedLedgerDefaultAckQuorum: "1"
+    functionsWorkerEnabled: "true"
+    PF_pulsarFunctionsCluster: local
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+    name: broker
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: pulsar
+                component: broker
+            annotations:
+                prometheus.io/scrape: "true"
+                prometheus.io/port: "8080"
+        spec:
+            containers:
+              - name: broker
+                image: apachepulsar/pulsar-all:latest
+                command: ["sh", "-c"]
+                args:
+                  - >
+                    bin/apply-config-from-env.py conf/broker.conf &&
+                    bin/apply-config-from-env.py conf/pulsar_env.sh &&
+                    bin/gen-yml-from-env.py conf/functions_worker.yml &&
+                    bin/pulsar broker
+                ports:
+                  - containerPort: 8080
+                    # hostPort: 8080
+                  - containerPort: 6650
+                    # hostPort: 6650
+                envFrom:
+                  - configMapRef:
+                        name: broker-config
+                env:
+                 - name: advertisedAddress
+                   valueFrom:
+                       fieldRef:
+                           fieldPath: status.podIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: broker
+    labels:
+        app: pulsar
+        component: broker
+spec:
+    type: NodePort
+    ports:
+      - port: 8080
+        nodePort: 30010
+        name: http
+      - port: 6650
+        name: pulsar
+    selector:
+        app: pulsar
+        component: broker
+
+---

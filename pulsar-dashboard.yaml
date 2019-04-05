@@ -1,0 +1,48 @@
+## Include detailed Pulsar dashboard
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+    name: pulsar-dashboard
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: pulsar
+                component: dashboard
+        spec:
+            containers:
+              - name: pulsar-dashboard
+                image: apachepulsar/pulsar-dashboard:latest
+                resources:
+                  requests:
+                    memory: "128Mi"
+                    cpu: "0.25"
+                  limits:
+                    memory: "256Mi"
+                    cpu: "0.5"
+                ports:
+                  - containerPort: 80
+                env:
+                  - name: SERVICE_URL
+                    value: http://broker:8080/
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: pulsar-dashboard
+    labels:
+        app: pulsar
+        component: dashboard
+spec:
+    type: NodePort
+    ports:
+      - name: dashboard
+        nodePort: 30005
+        port: 80
+        protocol: TCP
+    selector:
+        app: pulsar
+        component: dashboard

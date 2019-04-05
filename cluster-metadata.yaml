@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pulsar-cluster-metadata-init
+  labels:
+    app: pulsar
+    component: broker
+spec:
+  template:
+    spec:
+      containers:
+        - name: pulsar-cluster-metadata-init-container
+          image: apachepulsar/pulsar:latest
+          command: ["sh", "-c"]
+          args:
+            - >
+              bin/pulsar initialize-cluster-metadata \
+                --cluster local \
+                --zookeeper zk-cs \
+                --configuration-store zk-cs \
+                --web-service-url http://broker.default.svc.cluster.local:8080/ \
+                --broker-service-url pulsar://broker.default.svc.cluster.local:6650/ || true;
+      restartPolicy: Never
