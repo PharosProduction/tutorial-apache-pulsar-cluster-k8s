@@ -1,7 +1,7 @@
 # Tutorial on How to Deploy Apache Pulsar Cluster in Kubernetes.
 
 ## You can find it in our Medium publication
-[Pharos Production Medium Article](https://medium.com/pharos-production/how-to-deploy-apache-pulsar-cluster-in-kubernetes-808ecdfd87).
+[Pharos Production Medium Article](https://medium.com/pharos-production).
 
 Also you're warmely welcome to say hello to us
 [Pharos Production - Blockchain and FinTech Software Development](https://pharosproduction.com)
